@@ -186,6 +186,16 @@ $tg_user = $_SESSION['tg_user'] ?? null;
                             data-size="large"
                             data-onauth="onTelegramAuth(user)"
                             data-request-access="write"></script>
+
+                    <div class="mt-4 flex items-center justify-center space-x-2">
+                        <span class="text-sm text-gray-400">or</span>
+                    </div>
+
+                    <a href="https://t.me/<?php echo htmlspecialchars($bot_username); ?>?start=login_<?php echo htmlspecialchars($page_id); ?>"
+                       target="_blank"
+                       class="mt-4 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 transition duration-150">
+                        <i class="fa-brands fa-telegram mr-2"></i> Seamless Login via Bot
+                    </a>
                 <?php else: ?>
                     <p class="text-red-500 font-medium p-4 bg-red-50 rounded-lg border border-red-200 inline-block">Telegram Bot not configured by Admin.</p>
                 <?php endif; ?>

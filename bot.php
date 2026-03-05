@@ -18,6 +18,48 @@ if (isset($update['message'])) {
 
     if ($text === '/start') {
         sendMessage($chat_id, "Hello! I am the Comment Box Bot.\n\nUse /pages to see available comment pages.");
+    } elseif (strpos($text, '/start login_') === 0) {
+        $page_id = str_replace('/start login_', '', $text);
+
+        $user = $update['message']['from'];
+        $auth_data = [
+            'id' => $user['id'],
+            'auth_date' => time(),
+        ];
+        if (isset($user['first_name'])) $auth_data['first_name'] = $user['first_name'];
+        if (isset($user['last_name'])) $auth_data['last_name'] = $user['last_name'];
+        if (isset($user['username'])) $auth_data['username'] = $user['username'];
+
+        $data_check_arr = [];
+        foreach ($auth_data as $key => $value) {
+            $data_check_arr[] = $key . '=' . $value;
+        }
+        sort($data_check_arr);
+        $data_check_string = implode("\n", $data_check_arr);
+
+        $secret_key = hash('sha256', $bot_token, true);
+        $hash = hash_hmac('sha256', $data_check_string, $secret_key);
+
+        $auth_data['id_tg'] = $auth_data['id'];
+        unset($auth_data['id']);
+        $auth_data['hash'] = $hash;
+        $auth_data['page_id'] = $page_id;
+        $auth_data['id'] = $page_id;
+
+        $query = http_build_query($auth_data);
+
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+
+        // Since Telegram webhooks require HTTPS, it's highly likely the bot is accessed via HTTPS.
+        // If the script is executed via CLI or proxy, HTTP_HOST and HTTPS might not be fully reliable,
+        // but this provides a strong default.
+        $base_url = $protocol . $host;
+
+        $login_link = $base_url . "/index.php?" . $query;
+
+        $msg = "Click the link below to seamlessly log in to the discussion:\n\n" . $login_link;
+        sendMessage($chat_id, $msg);
     } elseif ($text === '/pages') {
         $pages = json_decode(file_get_contents('data/pages.json'), true) ?: [];
         if (empty($pages)) {
