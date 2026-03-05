@@ -79,8 +79,13 @@ $pages_to_show = array_slice($pages, $offset, $per_page);
 <body class="bg-gray-100 font-sans leading-normal tracking-normal flex h-screen">
     <?php include 'sidebar.php'; ?>
 
-    <div class="main-content flex-1 bg-gray-100 ml-64 p-8 overflow-y-auto h-full">
-        <h2 class="text-3xl font-bold mb-6 text-gray-800">Comment Pages</h2>
+    <div class="main-content flex-1 bg-gray-100 ml-0 md:ml-64 p-4 md:p-8 overflow-y-auto h-full w-full">
+        <div class="flex items-center mb-6">
+            <button id="open-sidebar" class="md:hidden mr-4 text-gray-800 hover:text-gray-600 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800">Comment Pages</h2>
+        </div>
 
         <?php if ($message): ?>
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
