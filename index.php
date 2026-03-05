@@ -42,17 +42,18 @@ function verify_telegram_login($auth_data) {
 }
 
 // Handle login via GET parameters passed by Telegram Widget
-if (isset($_GET['id']) && isset($_GET['hash']) && isset($_GET['auth_date'])) {
+if (isset($_GET['id_tg']) && isset($_GET['hash']) && isset($_GET['auth_date'])) {
 
     $auth_data = [
-        'id' => $_GET['id_tg'] ?? $_GET['id'], // 'id' from Telegram widget, not page id
-        'first_name' => $_GET['first_name'] ?? '',
-        'last_name' => $_GET['last_name'] ?? '',
-        'username' => $_GET['username'] ?? '',
-        'photo_url' => $_GET['photo_url'] ?? '',
+        'id' => $_GET['id_tg'], // 'id' from Telegram widget, mapped from id_tg
         'auth_date' => $_GET['auth_date'],
         'hash' => $_GET['hash']
     ];
+
+    if (isset($_GET['first_name'])) $auth_data['first_name'] = $_GET['first_name'];
+    if (isset($_GET['last_name'])) $auth_data['last_name'] = $_GET['last_name'];
+    if (isset($_GET['username'])) $auth_data['username'] = $_GET['username'];
+    if (isset($_GET['photo_url'])) $auth_data['photo_url'] = $_GET['photo_url'];
 
     if (verify_telegram_login($auth_data)) {
         $_SESSION['tg_user'] = $auth_data;
@@ -110,7 +111,17 @@ $tg_user = $_SESSION['tg_user'] ?? null;
             const currentUrl = new URL(window.location.href);
             const pageId = currentUrl.searchParams.get('id');
 
-            let url = `/index.php?page_id=${pageId}&id_tg=${user.id}&first_name=${user.first_name}&last_name=${user.last_name}&username=${user.username}&photo_url=${encodeURIComponent(user.photo_url)}&auth_date=${user.auth_date}&hash=${user.hash}`;
+            const params = new URLSearchParams();
+            if (pageId) params.append('page_id', pageId);
+            params.append('id_tg', user.id);
+            if (user.first_name) params.append('first_name', user.first_name);
+            if (user.last_name) params.append('last_name', user.last_name);
+            if (user.username) params.append('username', user.username);
+            if (user.photo_url) params.append('photo_url', user.photo_url);
+            params.append('auth_date', user.auth_date);
+            params.append('hash', user.hash);
+
+            let url = `/index.php?${params.toString()}`;
 
             window.location.href = url;
         }
