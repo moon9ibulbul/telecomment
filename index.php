@@ -128,7 +128,7 @@ $tg_user = $_SESSION['tg_user'] ?? null;
     </script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased">
-    <div class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="w-full md:max-w-4xl mx-auto py-6 md:py-12 px-2 sm:px-6 lg:px-8">
         <h1 class="text-3xl font-bold mb-8 pb-4 border-b border-gray-200">
             <?php echo htmlspecialchars($current_page['title']); ?> Discussion
         </h1>
@@ -181,20 +181,10 @@ $tg_user = $_SESSION['tg_user'] ?? null;
                 <p class="text-gray-500 mb-8 max-w-md mx-auto">Login with your Telegram account to leave a comment, reply to others, and vote on comments.</p>
 
                 <?php if ($bot_username): ?>
-                    <script async src="https://telegram.org/js/telegram-widget.js?22"
-                            data-telegram-login="<?php echo htmlspecialchars($bot_username); ?>"
-                            data-size="large"
-                            data-onauth="onTelegramAuth(user)"
-                            data-request-access="write"></script>
-
-                    <div class="mt-4 flex items-center justify-center space-x-2">
-                        <span class="text-sm text-gray-400">or</span>
-                    </div>
-
                     <a href="https://t.me/<?php echo htmlspecialchars($bot_username); ?>?start=login_<?php echo htmlspecialchars($page_id); ?>"
                        target="_blank"
                        class="mt-4 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 transition duration-150">
-                        <i class="fa-brands fa-telegram mr-2"></i> Seamless Login via Bot
+                        <i class="fa-brands fa-telegram mr-2"></i> Login dengan Telegram
                     </a>
                 <?php else: ?>
                     <p class="text-red-500 font-medium p-4 bg-red-50 rounded-lg border border-red-200 inline-block">Telegram Bot not configured by Admin.</p>
@@ -221,7 +211,7 @@ $tg_user = $_SESSION['tg_user'] ?? null;
         const CURRENT_USER_ID = '<?php echo $tg_user ? $tg_user['id'] : ''; ?>';
 
         function loadComments() {
-            fetch(`/api.php?action=get&page_id=${PAGE_ID}`)
+            fetch(`/api.php?action=get&page_id=${PAGE_ID}&t=${new Date().getTime()}`)
                 .then(response => response.json())
                 .then(data => renderComments(data))
                 .catch(error => console.error('Error fetching comments:', error));
@@ -251,7 +241,7 @@ $tg_user = $_SESSION['tg_user'] ?? null;
         function createCommentElement(comment, isReply = false) {
             const div = document.createElement('div');
             div.className = isReply
-                ? 'flex bg-gray-50 p-4 rounded-lg border border-gray-100 mt-3 ml-8'
+                ? 'flex bg-gray-50 p-4 rounded-lg border border-gray-100 mt-3 ml-2 md:ml-8'
                 : 'flex bg-white p-5 rounded-lg border border-gray-200 shadow-sm transition-shadow hover:shadow-md mb-4';
             div.id = `comment-${comment.id}`;
 
@@ -434,12 +424,15 @@ $tg_user = $_SESSION['tg_user'] ?? null;
             })
             .then(r => r.json())
             .then(res => {
-                if (res.success) loadComments();
-                else {
+                if (res.success) {
+                    loadComments();
+                } else {
                     alert(res.error || 'Failed to post reply');
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
                 }
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             });
         };
 
@@ -459,12 +452,15 @@ $tg_user = $_SESSION['tg_user'] ?? null;
             })
             .then(r => r.json())
             .then(res => {
-                if (res.success) loadComments();
-                else {
+                if (res.success) {
+                    loadComments();
+                } else {
                     alert(res.error || 'Failed to edit comment');
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
                 }
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             });
         };
 
