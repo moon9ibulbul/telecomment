@@ -17,7 +17,7 @@ function get_settings() {
     if (file_exists($file)) {
         return json_decode(file_get_contents($file), true);
     }
-    return ['bot_token' => '', 'bot_username' => ''];
+    return ['bot_token' => '', 'bot_username' => '', 'app_url' => ''];
 }
 
 function save_settings($settings) {
